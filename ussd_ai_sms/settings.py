@@ -37,7 +37,7 @@ OPEN_AI_URL = config('OPEN_AI_URL')
 
 
 
-ALLOWED_HOSTS = ['localhost',  'ioana4wsgl.loclx.io', 'nokia-original-march-leonard.trycloudflare.com'  ]
+ALLOWED_HOSTS = ['localhost',  'ch2etjntap.loclx.io']
 
 
 
