@@ -48,18 +48,14 @@ def ussd_callback(request):
                 ai_res = requests.post(settings.OPEN_AI_URL, headers=headers, json=payload)
                 ai_text = ai_res.json()["choices"][0]["message"]["content"]
 
-                 # Send AI answer via SMS
-                sms.send(f"AI Reply: {ai_text}", [phone_number])
+                # ✅ Send AI answer via SMS using helper and USSD phone number
+                send_sms(phone_number, f"AI Reply: {ai_text}")
                 
                 response = "END Your answer has been sent via SMS"
 
             except Exception as e:
-             print("AI request failed", e)
-             response = "Sorry there was a problem fetching you answer"
-
-            # Save question and trigger SMS reply later
-             send_ai_response(phone_number, question)
-            response = "END Thanks! We'll send your answer via SMS."
+                print("AI request failed", e)
+                response = "END Sorry there was a problem fetching your answer"
 
         elif text == "2":
             response = "END Goodbye!"
@@ -75,19 +71,39 @@ def ussd_callback(request):
 # SMS FLOW
 @csrf_exempt
 def sms_callback(request):
-    """Handle incoming SMS"""
     if request.method == "POST":
-        phone_number = request.POST.get("from")
-        text = request.POST.get("text")
+        print("RAW POST DATA:", request.body)
+        print("POST dict:", request.POST)
 
-        print(f"Incoming SMS from {phone_number}: {text}")
-        send_sms(phone_number, "Thanks for your message!")
+        phone_number = request.POST.get("phoneNumber")
+        text = request.POST.get("text")
+        status = request.POST.get("status")  # Delivery report status
+        failure_reason = request.POST.get("failureReason")
+
+        # If it's a delivery report, don't send an auto-reply
+        if status or failure_reason:
+            print(f"Delivery report received for {phone_number}, status={status}, reason={failure_reason}")
+            return HttpResponse("ok")
+
+        # If it's a real incoming SMS from the user
+        if phone_number and text:
+            print(f"Incoming SMS from {phone_number}: {text}")
+            send_sms(phone_number, "Thanks for your message!")
+        else:
+            print("No valid incoming message detected")
+
         return HttpResponse("ok")
     return HttpResponse("Invalid request", status=400)
 
 
+
 # Helper to send SMS
 def send_sms(phone_number, message):
+    # Debugging check before sending
+    if not phone_number or not message:
+        print(f"Error: Missing phone number or message. phone_number={phone_number}, message={message}")
+        return None  # Stop early if data is missing
+    
     try:
         response = sms.send(message, [phone_number])
         print("SMS Response:", response)

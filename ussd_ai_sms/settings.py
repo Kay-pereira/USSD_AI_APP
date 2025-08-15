@@ -14,7 +14,6 @@ from pathlib import Path
 from decouple import config, Csv
 
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,22 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY =  config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG =  config('DEBUG', cast = bool)
+DEBUG = config('DEBUG', cast=bool)
 AFRIKAS_TALKING_API_KEY = config('AFRIKAS_TALKING_API_KEY')
 AFRIKAS_TALKING_USERNAME = config('AFRIKAS_TALKING_USERNAME')
 OPEN_AI_API_KEY = config('OPEN_AI_API_KEY')
 OPEN_AI_URL = config('OPEN_AI_URL')
 
 
-
-
-
-
-ALLOWED_HOSTS = ['localhost',  'ch2etjntap.loclx.io']
-
-
+ALLOWED_HOSTS = ['localhost',  '5229b32c04ac.ngrok-free.app']
 
 
 # Application definition
